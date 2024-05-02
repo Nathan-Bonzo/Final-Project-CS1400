@@ -1,0 +1,15 @@
+C:\Users\JHS Student\CS1400\Final-Project-CS1400\bin\Debug\net8.0\Final-Project-CS1400.exe
+C:\Users\JHS Student\CS1400\Final-Project-CS1400\bin\Debug\net8.0\Final-Project-CS1400.deps.json
+C:\Users\JHS Student\CS1400\Final-Project-CS1400\bin\Debug\net8.0\Final-Project-CS1400.runtimeconfig.json
+C:\Users\JHS Student\CS1400\Final-Project-CS1400\bin\Debug\net8.0\Final-Project-CS1400.dll
+C:\Users\JHS Student\CS1400\Final-Project-CS1400\bin\Debug\net8.0\Final-Project-CS1400.pdb
+C:\Users\JHS Student\CS1400\Final-Project-CS1400\obj\Debug\net8.0\Final-Project-CS1400.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\JHS Student\CS1400\Final-Project-CS1400\obj\Debug\net8.0\Final-Project-CS1400.AssemblyInfoInputs.cache
+C:\Users\JHS Student\CS1400\Final-Project-CS1400\obj\Debug\net8.0\Final-Project-CS1400.AssemblyInfo.cs
+C:\Users\JHS Student\CS1400\Final-Project-CS1400\obj\Debug\net8.0\Final-Project-CS1400.csproj.CoreCompileInputs.cache
+C:\Users\JHS Student\CS1400\Final-Project-CS1400\obj\Debug\net8.0\Final-Project-CS1400.sourcelink.json
+C:\Users\JHS Student\CS1400\Final-Project-CS1400\obj\Debug\net8.0\Final-Project-CS1400.dll
+C:\Users\JHS Student\CS1400\Final-Project-CS1400\obj\Debug\net8.0\refint\Final-Project-CS1400.dll
+C:\Users\JHS Student\CS1400\Final-Project-CS1400\obj\Debug\net8.0\Final-Project-CS1400.pdb
+C:\Users\JHS Student\CS1400\Final-Project-CS1400\obj\Debug\net8.0\Final-Project-CS1400.genruntimeconfig.cache
+C:\Users\JHS Student\CS1400\Final-Project-CS1400\obj\Debug\net8.0\ref\Final-Project-CS1400.dll
