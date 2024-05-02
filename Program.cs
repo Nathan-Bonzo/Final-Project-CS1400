@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 //Nathan Bonzo's To-Do List application.
 Console.Clear();
 
-List<string> todoList = new List<string>(); // List that will contain the to-do list items.
+List<(string taskName, DateTime Duedate)> todoList = new List<(string, DateTime)>(); // List that will contain the to-do list items.
 
-bool exit = false;
+bool exit = false; // Keep us in the while loop until user wants to exit.
 
 LoadTasks();
-Console.WriteLine("Welcome to the To-Do List application! Please select an option below to get Started!");
+
 const string todoListFile = "todo_list.txt";
+
+Console.WriteLine("Welcome to the To-Do List application! Please select an option below to get Started!");
+
 while (!exit)
     {
         // Our menu that the user will see and understand what they should do.
@@ -53,17 +58,30 @@ while (!exit)
         Console.WriteLine();
     }
 
-
+DateTime dateDue = DateTime.Now;
 
 void AddTask()
 {
     Console.Write("Enter the task: ");
     string? task = Console.ReadLine();
+    Console.Write("Enter the due date (YYYY-MM-DD): ");
     try
     {
-        if (task != null)
+        string? inputDate = Console.ReadLine();
+        if (inputDate != null)
         {
-            todoList.Add("[] " + task);
+            DateTime dateDue = DateTime.Parse(inputDate);
+        }
+    }
+    catch (FormatException)
+    {
+        Console.WriteLine("Sorry, this is not in the right format.");
+    }
+    try
+    {
+        if (task != null) // Task could be null at times so this makes sure that if it is null, it is handled.
+        {
+            todoList.Add(("[] " + task, dateDue));
             Console.WriteLine("Task added successfully!");
         }
     }
@@ -81,25 +99,29 @@ void RemoveTask()
         return;
     }
 
-    Console.WriteLine("Current Tasks:");
+    Console.WriteLine("Current Tasks:"); // Display tasks
     for (int i = 0; i < todoList.Count; i++)
     {
         Console.WriteLine($"{i + 1}. {todoList[i]}");
     }
 
-        Console.Write("Enter the number of which task you wish to remove: ");
-        int removeIndex = Convert.ToInt32(Console.ReadLine());
-        if (removeIndex >= 1 && removeIndex <= todoList.Count)
-        {
-            todoList.RemoveAt(removeIndex - 1);
-            Console.WriteLine("Task removed successfully!");
-        }
-        else
-        {
-            Console.WriteLine("Invalid input. Please enter a valid number.");
-        }
+    Console.Write("Enter the number of which task you wish to remove: ");
+    int removeIndex = Convert.ToInt32(Console.ReadLine());
+
+    Debug.Assert(removeIndex >= 1 && removeIndex <= todoList.Count, "Invalid index for removing task."); // Check for a valid choice
+
+    if (removeIndex >= 1 && removeIndex <= todoList.Count)
+    {
+        todoList.RemoveAt(removeIndex - 1);
+        Console.WriteLine("Task removed successfully!");
     }
-void Priority()
+    else
+    {
+        Console.WriteLine("Invalid input. Please enter a valid number.");
+    }
+}
+// Prioritizes tasks so user can decide which one is most important
+void Priority() 
 {
     if (todoList.Count == 0)
     {
@@ -113,6 +135,9 @@ void Priority()
     }
     Console.Write("Which task do you want to prioritize? ");
     int priorityChoice = Convert.ToInt32(Console.ReadLine());
+
+    Debug.Assert(priorityChoice >= 1 && priorityChoice <= todoList.Count, "Invalid index for prioritizing task."); // Check for a valid choice
+
     if (priorityChoice >= 1 && priorityChoice <= todoList.Count)
     {
         Console.WriteLine("Priority goes to where the lower the number, the higher the priority. (E.g. 1 is the highest)");
@@ -123,15 +148,12 @@ void Priority()
             string temp = todoList[priorityChoice - 1];
             todoList[priorityChoice - 1] = todoList[priorityOrder - 1];
             todoList[priorityOrder -1] = temp;
-            //todoList.RemoveAt(priorityChoice - 1);
-            //todoList.Insert(priorityOrder - 1, todoList[priorityChoice - 1]);
-            //todoList[priorityOrder - 1] = priorityOrder + ". " + todoList[priorityChoice - 1];
         }
     }
 }
 
-
-void CheckOff()
+// Allows user to 'check off' a task or uncheck if they desire.
+void CheckOff() 
 {
     if (todoList.Count == 0)
     {
@@ -177,12 +199,12 @@ void ViewTasks()
         }
     }
 }
-
+// This method is to save all the tasks that were added to the todo_file so they can be saved and reused even after the program closes.
 void SaveTasks()
 {
     File.WriteAllLines(todoListFile, todoList);
 }
-
+// This loads anyt tasks that were save into the todoList 
 void LoadTasks()
 {
     if (File.Exists(todoListFile))
