@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 //Nathan Bonzo's To-Do List application.
 Console.Clear();
 
-List<(string taskName, DateTime Duedate)> todoList = new List<(string, DateTime)>(); // List that will contain the to-do list items.
+List<(string checkOffBox, string taskName, DateTime dueDate)> todoList = new List<(string, string, DateTime)>(); // List that will contain the to-do list items.
 
 bool exit = false; // Keep us in the while loop until user wants to exit.
 
 LoadTasks();
 
 const string todoListFile = "todo_list.txt";
+
+DateTime dueDate = DateTime.Now; // Give me a baseline variable to input the date with
 
 Console.WriteLine("Welcome to the To-Do List application! Please select an option below to get Started!");
 
@@ -58,7 +60,6 @@ while (!exit)
         Console.WriteLine();
     }
 
-DateTime dateDue = DateTime.Now;
 
 void AddTask()
 {
@@ -67,22 +68,22 @@ void AddTask()
     Console.Write("Enter the due date (YYYY-MM-DD): ");
     try
     {
-        string? inputDate = Console.ReadLine();
-        if (inputDate != null)
-        {
-            DateTime dateDue = DateTime.Parse(inputDate);
-        }
-    }
-    catch (FormatException)
-    {
-        Console.WriteLine("Sorry, this is not in the right format.");
-    }
-    try
-    {
         if (task != null) // Task could be null at times so this makes sure that if it is null, it is handled.
         {
-            todoList.Add(("[] " + task, dateDue));
-            Console.WriteLine("Task added successfully!");
+            if (DateTime.TryParse(Console.ReadLine(), out DateTime due))
+            {
+                int proirityDate = todoList.FindIndex(date => date.dueDate > due);
+                if (proirityDate == -1)
+                {
+                    todoList.Add(("[]", task, due));
+                }
+                else
+                {
+                    // Otherwise, insert the new task at the appropriate position
+                    todoList.Insert(proirityDate, ("[]", task, due));
+                }
+                Console.WriteLine("Task added successfully!");
+            }
         }
     }
     catch (Exception)
@@ -93,17 +94,7 @@ void AddTask()
 
 void RemoveTask()
 {
-    if (todoList.Count == 0) // For if there are no tasks
-    {
-        Console.WriteLine("No tasks to remove.");
-        return;
-    }
-
-    Console.WriteLine("Current Tasks:"); // Display tasks
-    for (int i = 0; i < todoList.Count; i++)
-    {
-        Console.WriteLine($"{i + 1}. {todoList[i]}");
-    }
+    ViewTasks();
 
     Console.Write("Enter the number of which task you wish to remove: ");
     int removeIndex = Convert.ToInt32(Console.ReadLine());
@@ -123,16 +114,8 @@ void RemoveTask()
 // Prioritizes tasks so user can decide which one is most important
 void Priority() 
 {
-    if (todoList.Count == 0)
-    {
-        Console.WriteLine("No tasks to prioritize.");
-        return;
-    }
-    Console.WriteLine("Current Tasks:");
-    for (int i = 0; i < todoList.Count; i++)
-    {
-        Console.WriteLine($"{i + 1}. {todoList[i]}");
-    }
+    ViewTasks();
+
     Console.Write("Which task do you want to prioritize? ");
     int priorityChoice = Convert.ToInt32(Console.ReadLine());
 
@@ -145,7 +128,7 @@ void Priority()
         int priorityOrder = Convert.ToInt32(Console.ReadLine());
         if (priorityOrder >= 1)
         {
-            string temp = todoList[priorityChoice - 1];
+            (string, string, DateTime) temp = todoList[priorityChoice - 1];
             todoList[priorityChoice - 1] = todoList[priorityOrder - 1];
             todoList[priorityOrder -1] = temp;
         }
@@ -155,28 +138,21 @@ void Priority()
 // Allows user to 'check off' a task or uncheck if they desire.
 void CheckOff() 
 {
-    if (todoList.Count == 0)
-    {
-        Console.WriteLine("No tasks to check off or uncheck.");
-        return;
-    }
-    Console.WriteLine("Current Tasks:");
-    for (int i = 0; i < todoList.Count; i++)
-    {
-        Console.WriteLine($"{i + 1}. {todoList[i]}");
-    }
+    ViewTasks();
+
     Console.Write("Enter the number of the task you want to check off or uncheck: ");
     int checkOffItem = Convert.ToInt32(Console.ReadLine());
     if (checkOffItem >=1 && checkOffItem <= todoList.Count)
     {
-        if (todoList[checkOffItem - 1].Contains("[]"))
+        string status = todoList[checkOffItem - 1].checkOffBox;
+        if (status == "[]")
         {
-            todoList[checkOffItem - 1] = "[X] " + todoList[checkOffItem - 1].Substring(3);
+            todoList[checkOffItem - 1] = ("[X] ", todoList[checkOffItem - 1].taskName, todoList[checkOffItem-1].dueDate);
             Console.WriteLine("Task Checked Off.");
         }
-        else if (todoList[checkOffItem - 1].Contains("[X]"))
+        else if (status == "[X]")
         {
-            todoList[checkOffItem - 1] = "[ ] " + todoList[checkOffItem - 1].Substring(3);
+            todoList[checkOffItem - 1] = ("[X] ", todoList[checkOffItem - 1].taskName, todoList[checkOffItem-1].dueDate);
             Console.WriteLine("Task Unchecked.");
         }
     }
@@ -187,7 +163,7 @@ void CheckOff()
 void ViewTasks()
 {
     Console.WriteLine("Current Tasks:");
-    if ( todoList.Count == 0)
+    if ( todoList.Count == 0) // If there are no tasks to display
     {
         Console.WriteLine("No tasks to display.");
     }
@@ -195,20 +171,38 @@ void ViewTasks()
     {
         for (int i = 0; i < todoList.Count; i++)
         {
-            Console.WriteLine($"{i + 1}. {todoList[i]}");
+            Console.WriteLine($"{i + 1}. {todoList[i].checkOffBox} {todoList[i].taskName} - Due Date: {todoList[i].dueDate:yyyy-MM-dd}");
         }
     }
 }
+
 // This method is to save all the tasks that were added to the todo_file so they can be saved and reused even after the program closes.
 void SaveTasks()
 {
-    File.WriteAllLines(todoListFile, todoList);
+    List<string> saveToFile = new List<string>();
+    foreach (var task in todoList)
+    {
+        string line = $"{task.checkOffBox},{task.taskName},{task.dueDate:yyyy-MM-dd}";
+        saveToFile.Add(line);
+
+    }
+    File.WriteAllLines(todoListFile, saveToFile);
 }
-// This loads anyt tasks that were save into the todoList 
+// This loads any tasks that were saved into the todoList 
 void LoadTasks()
 {
-    if (File.Exists(todoListFile))
+   if (File.Exists(todoListFile))
     {
-        todoList = new List<string>(File.ReadAllLines(todoListFile));
+        todoList.Clear(); // Clear existing tasks before loading new ones
+        foreach (string line in File.ReadAllLines(todoListFile))
+        {
+            string[] listParts = line.Split(',');
+            DateTime dateSaved = DateTime.Parse(listParts[2]);
+            if (listParts.Length == 3)
+            {
+                todoList.Add((listParts[0], listParts[1], dateSaved));
+            }
+        }
     }
 }
+
